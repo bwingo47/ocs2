@@ -1,7 +1,0 @@
-# ninja log v5
-13819	14325	1657922163151952773	devel/lib/libocs2_legged_robot_ros.so	ca7b309db8c83756
-1	2559	1657922151387816782	CMakeFiles/ocs2_legged_robot_ros.dir/src/gait/GaitKeyboardPublisher.cpp.o	e7bf8ad0a3a11fa3
-14325	14578	1657922163407955731	devel/lib/ocs2_legged_robot_ros/legged_robot_ddp_mpc	e7b514e51d193bda
-0	13818	1657922162631946763	CMakeFiles/ocs2_legged_robot_ros.dir/src/visualization/LeggedRobotVisualizer.cpp.o	869094df32f5d767
-1	4345	1657922153175837456	CMakeFiles/legged_robot_ddp_mpc.dir/src/LeggedRobotDdpMpcNode.cpp.o	2b9111adf92834
-0	2308	1657922151135813868	CMakeFiles/ocs2_legged_robot_ros.dir/src/gait/GaitReceiver.cpp.o	be3cf40a89cba29c
