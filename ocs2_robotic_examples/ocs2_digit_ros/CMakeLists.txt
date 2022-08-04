@@ -91,35 +91,35 @@ target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
 
 
 
-# Keyboard command node for target trajectories
-add_executable(legged_robot_target
-    src/LeggedRobotPoseCommandNode.cpp
-    )
-add_dependencies(legged_robot_target
-    ${PROJECT_NAME}
-    ${${PROJECT_NAME}_EXPORTED_TARGETS}
-    ${catkin_EXPORTED_TARGETS}
-    )
-target_link_libraries(legged_robot_target
-    ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
-    )
-target_compile_options(legged_robot_target PRIVATE ${OCS2_CXX_FLAGS})
-
-# Keyboard command node for gait
-add_executable(legged_robot_gait_command
-    src/LeggedRobotGaitCommandNode.cpp
-    )
-add_dependencies(legged_robot_gait_command
-    ${PROJECT_NAME}
-    ${${PROJECT_NAME}_EXPORTED_TARGETS}
-    ${catkin_EXPORTED_TARGETS}
-    )
-target_link_libraries(legged_robot_gait_command
-    ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
-    )
-target_compile_options(legged_robot_gait_command PRIVATE ${OCS2_CXX_FLAGS})
+## Keyboard command node for target trajectories
+#add_executable(legged_robot_target
+#    src/LeggedRobotPoseCommandNode.cpp
+#    )
+#add_dependencies(legged_robot_target
+#    ${PROJECT_NAME}
+#    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+#    ${catkin_EXPORTED_TARGETS}
+#    )
+#target_link_libraries(legged_robot_target
+#    ${PROJECT_NAME}
+#    ${catkin_LIBRARIES}
+#    )
+#target_compile_options(legged_robot_target PRIVATE ${OCS2_CXX_FLAGS})
+#
+## Keyboard command node for gait
+#add_executable(legged_robot_gait_command
+#    src/LeggedRobotGaitCommandNode.cpp
+#    )
+#add_dependencies(legged_robot_gait_command
+#    ${PROJECT_NAME}
+#    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+#    ${catkin_EXPORTED_TARGETS}
+#    )
+#target_link_libraries(legged_robot_gait_command
+#    ${PROJECT_NAME}
+#    ${catkin_LIBRARIES}
+#    )
+#target_compile_options(legged_robot_gait_command PRIVATE ${OCS2_CXX_FLAGS})
 
 
 

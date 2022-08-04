@@ -22,3 +22,36 @@
 // URDF related
 #include <urdf/model.h>
 #include <kdl_parser/kdl_parser.hpp>
+
+namespace ocs2 {
+namespace digit {
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+DigitVisualizer::DigitVisualizer(PinocchioInterface pinocchio_interface,
+                                 CentroidalModelInfo centroidal_model_info,
+                                 const PinocchioEndEffectorKinematics end_effector_kinematics,
+                                 ros::NodeHandle &node_handle, scalar_t max_update_freq)
+    : endEffectorKinematicsPtr_(end_effector_kinematics.clone()),
+      centroidalModelInfo_(centroidal_model_info),
+      pinocchioInterface_(pinocchio_interface),
+      lastTime_(std::numeric_limits<scalar_t>::lowest()),
+      minPublishTimeDifference_(1.0 / max_update_freq)
+{
+    endEffectorKinematicsPtr_->setPinocchioInterface(pinocchioInterface_);
+    launchVisualizerNode(node_handle);
+}
+
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+void DigitVisualizer::update(const SystemObservation &observation, const PrimalSolution &primal_solution,
+                             const CommandData &command)
+{
+
+}
+
+}
+}
