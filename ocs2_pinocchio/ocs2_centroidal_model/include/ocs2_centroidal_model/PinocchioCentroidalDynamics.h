@@ -59,6 +59,7 @@ class PinocchioCentroidalDynamics final {
   /**
    * Constructor
    * @param [in] CentroidalModelInfo : The centroidal model information.
+   * explicit keyword to prevent implicit type conversions of the class/function arguments.
    */
   explicit PinocchioCentroidalDynamics(CentroidalModelInfo info);
 

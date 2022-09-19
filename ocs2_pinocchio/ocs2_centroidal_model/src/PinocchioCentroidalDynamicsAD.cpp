@@ -73,7 +73,8 @@ PinocchioCentroidalDynamicsAD::PinocchioCentroidalDynamicsAD(const PinocchioCent
 /******************************************************************************************************/
 /******************************************************************************************************/
 ad_vector_t PinocchioCentroidalDynamicsAD::getValueCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
-                                                         const CentroidalModelPinocchioMappingCppAd& mappingCppAd, const ad_vector_t& state,
+                                                         const CentroidalModelPinocchioMappingCppAd& mappingCppAd,
+                                                         const ad_vector_t& state,
                                                          const ad_vector_t& input) {
   const auto& info = mappingCppAd.getCentroidalModelInfo();
   assert(info.stateDim == state.rows());

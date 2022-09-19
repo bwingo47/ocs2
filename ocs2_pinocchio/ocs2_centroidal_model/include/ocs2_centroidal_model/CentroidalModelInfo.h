@@ -77,9 +77,27 @@ struct CentroidalModelInfoTpl {
   /** Casts CentroidalModelInfo to CentroidalModelInfoCppAD. */
   template <typename T = SCALAR, EnableIfScalar_t<T> = true>
   CentroidalModelInfoCppAd toCppAd() const;
+
+  /** alternative way to conditionally compile, through SFINAE
+   * (https://www.cppstories.com/2016/02/notes-on-c-sfinae/). */
+  template <typename T = SCALAR>
+  typename std::enable_if<std::is_same<T, scalar_t>::value, CentroidalModelInfoCppAd>::type
+  toCppAd_alt() const;
+
+  /** this is to only allow compilation of this function if class
+   * template parameter scalart_t(SCALAR) is of double type
+   * (enforced through function template parameter T with default set to double). */
+  template <typename T = double>
+  typename std::enable_if<std::is_same<T, scalar_t>::value, void>::type
+  printStatus(const bool status);
+
+//  void printStatus(const bool status);
+
+
 };
 
 /* Explicit template instantiation for scalar_t and ad_scalar_t */
 extern template struct CentroidalModelInfoTpl<scalar_t>;
 extern template struct CentroidalModelInfoTpl<ad_scalar_t>;
 }  // namespace ocs2
+

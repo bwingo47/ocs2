@@ -82,6 +82,7 @@ class LeggedRobotVisualizer : public DummyObserver {
                                        const vector_array_t& mpcStateTrajectory, const ModeSchedule& modeSchedule);
 
  private:
+  // delete copy constructor, this class manages noncopyable resource
   LeggedRobotVisualizer(const LeggedRobotVisualizer&) = delete;
   void publishJointTransforms(ros::Time timeStamp, const vector_t& jointAngles) const;
   void publishBaseTransform(ros::Time timeStamp, const vector_t& basePose);

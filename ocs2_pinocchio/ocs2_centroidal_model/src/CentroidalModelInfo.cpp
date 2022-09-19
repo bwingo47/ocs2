@@ -68,6 +68,41 @@ CentroidalModelInfoCppAd CentroidalModelInfo::toCppAd() const {
   return cppAdInfo;
 }
 
+template <>
+template <>
+CentroidalModelInfoCppAd CentroidalModelInfo::toCppAd_alt() const {
+  CentroidalModelInfoCppAd cppAdInfo;
+
+  cppAdInfo.centroidalModelType = this->centroidalModelType;
+  cppAdInfo.numThreeDofContacts = this->numThreeDofContacts;
+  cppAdInfo.numSixDofContacts = this->numSixDofContacts;
+  cppAdInfo.endEffectorFrameIndices = this->endEffectorFrameIndices;
+  cppAdInfo.generalizedCoordinatesNum = this->generalizedCoordinatesNum;
+  cppAdInfo.actuatedDofNum = this->actuatedDofNum;
+  cppAdInfo.stateDim = this->stateDim;
+  cppAdInfo.inputDim = this->inputDim;
+  cppAdInfo.robotMass = ad_scalar_t(this->robotMass);
+  cppAdInfo.qPinocchioNominal = this->qPinocchioNominal.cast<ad_scalar_t>();
+  cppAdInfo.centroidalInertiaNominal = this->centroidalInertiaNominal.cast<ad_scalar_t>();
+  cppAdInfo.comToBasePositionNominal = this->comToBasePositionNominal.cast<ad_scalar_t>();
+
+  return cppAdInfo;
+}
+
+template <>
+template <>
+void CentroidalModelInfo::printStatus(const bool status){
+  std::cout << "specialization to type double, printing using printStatus()" << std::endl;
+  std::cout << status << std::endl;
+//  CentroidalModelInfo::printStatus(status);
+//  this->printStatus(status);
+}
+
+//template <typename T>
+//void CentroidalModelInfoTpl<T>::printStatus(const bool status) {
+//  std::cout << status << std::endl;
+//}
+
 // explicit template instantiation
 template struct ocs2::CentroidalModelInfoTpl<ocs2::scalar_t>;
 template struct ocs2::CentroidalModelInfoTpl<ocs2::ad_scalar_t>;

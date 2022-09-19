@@ -1,8 +1,0 @@
-//
-// Created by bruce on 7/20/22.
-//
-
-#ifndef OCS2_DIGIT_ROS_GAITRECEIVER_H
-#define OCS2_DIGIT_ROS_GAITRECEIVER_H
-
-#endif //OCS2_DIGIT_ROS_GAITRECEIVER_H

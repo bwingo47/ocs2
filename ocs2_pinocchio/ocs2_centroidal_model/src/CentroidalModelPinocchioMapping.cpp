@@ -58,6 +58,8 @@ CentroidalModelPinocchioMappingTpl<SCALAR>::CentroidalModelPinocchioMappingTpl(c
 /******************************************************************************************************/
 template <typename SCALAR>
 CentroidalModelPinocchioMappingTpl<SCALAR>* CentroidalModelPinocchioMappingTpl<SCALAR>::clone() const {
+  /** "*this" dereference the object pointer to get the reference. Then use copy constructor
+   * of the CentroidalModelPinocchioMappingTpl for deep copy. */
   return new CentroidalModelPinocchioMappingTpl<SCALAR>(*this);
 }
 
@@ -96,8 +98,10 @@ auto CentroidalModelPinocchioMappingTpl<SCALAR>::getPinocchioJointVelocity(const
 
   Eigen::Matrix<SCALAR, 6, 1> momentum = info.robotMass * centroidal_model::getNormalizedMomentum(state, info);
   if (info.centroidalModelType == CentroidalModelType::FullCentroidalDynamics) {
+    /** for full centroidal dynamics: v_b = Ab_inv*hG*mass - Ab_inv*Aj*jointVelocities
+     *                                    = Ab_inv * (hG*mass - Aj*jointVelocities)   */
     momentum.noalias() -= A.rightCols(info.actuatedDofNum) * jointVelocities;
-  }
+  } /** the else case is for SRBD/potato model, where no joint variables in the state, so Ag = Ab. */
 
   vector_t vPinocchio(info.generalizedCoordinatesNum);
   vPinocchio.template head<6>().noalias() = Ab_inv * momentum;
