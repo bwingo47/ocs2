@@ -20,6 +20,9 @@ __pycache__
 *.pydevproject
 ocs2_core/test/cppad_cg/testCppADCG_generated/
 ocs2_ddp/test/ddp_test_generated/
+ocs2_pinocchio/ocs2_centroidal_model/cmake-build-*/
+ocs2_robotic_examples/ocs2_legged_robot/cmake-build-*/
+ocs2_robotic_examples/ocs2_legged_robot_ros/cmake-build-*/
 *.aux
 *.log
 *.out
