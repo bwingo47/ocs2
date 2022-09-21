@@ -71,6 +71,8 @@ class CentroidalModelRbdConversions final {
    * @note: The input rbdState contains non-local base velocities (expressed in world frame)
    *
    * @param [in] rbdState: rigid body dynamics model state [base pose, joint positions, base twist, joint velocities]
+   * @note: [base pose] = [base_euler_zyx, base_position_world_frame],
+   * [base twist] = [base_ang_vel_world_frame, base_lin_vel_world_frame]
    * @return ocs2 switched-model state vector
    */
   vector_t computeCentroidalStateFromRbdModel(const vector_t& rbdState);

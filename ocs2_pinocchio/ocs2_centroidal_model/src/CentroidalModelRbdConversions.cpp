@@ -63,6 +63,8 @@ void CentroidalModelRbdConversions::computeBaseKinematicsFromCentroidalModel(con
   const auto& info = mapping_.getCentroidalModelInfo();
   const auto qPinocchio = mapping_.getPinocchioJointPosition(state);
 
+  // require pinocchioInterface to update with updateCentroidalDynamics
+  // to update CMM and frame placements.
   updateCentroidalDynamics(pinocchioInterface_, info, qPinocchio);
 
   // Base Pose in world frame
@@ -100,6 +102,10 @@ vector_t CentroidalModelRbdConversions::computeCentroidalStateFromRbdModel(const
   const auto& model = pinocchioInterface_.getModel();
   auto& data = pinocchioInterface_.getData();
   const auto& info = mapping_.getCentroidalModelInfo();
+
+  // rbdState = [base pose, joint positions, base twist, joint velocities]
+  // [base pose] = [base_euler_zyx, base_position_world_frame]
+  // [base twist] = [base_ang_vel_world_frame, base_lin_vel_world_frame]
 
   vector_t qPinocchio(info.generalizedCoordinatesNum);
   qPinocchio.head<3>() = rbdState.segment<3>(3);
@@ -182,8 +188,12 @@ vector_t CentroidalModelRbdConversions::computeRbdTorqueFromCentroidalModelPD(co
   computeBaseKinematicsFromCentroidalModel(desiredState, desiredInput, desiredJointAccelerations, desiredBasePose, desiredBaseVelocity,
                                            desiredBaseAcceleration);
   vector_t qDesired(info.generalizedCoordinatesNum), vDesired(info.generalizedCoordinatesNum), aDesired(info.generalizedCoordinatesNum);
+
+  // qDesired = [base_position_world_frame, base_euler_zyx, joint_positions]
   qDesired << desiredBasePose, centroidal_model::getJointAngles(desiredState, info);
+  // vDesired = [base_lin_vel_world_frame, base_ang_vel_world_frame, joint_velocities]
   vDesired << desiredBaseVelocity, centroidal_model::getJointVelocities(desiredInput, info);
+  // aDesired = [base_lin_acc_world_frame, base_ang_acc_world_frame, joint_velocities]
   aDesired << desiredBaseAcceleration, desiredJointAccelerations;
 
   pinocchio::container::aligned_vector<pinocchio::Force> fextDesired(model.njoints, pinocchio::Force::Zero());
