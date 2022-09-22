@@ -74,6 +74,7 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
    * @param [in] pinocchioInterface: pinocchio interface on which computations are expected. It will keep a pointer for the getters.
    */
   void setPinocchioInterface(const PinocchioInterface& pinocchioInterface) {
+    // de-reference the pinocchioInterface lvalue reference
     pinocchioInterfacePtr_ = &pinocchioInterface;
     mappingPtr_->setPinocchioInterface(pinocchioInterface);
   }

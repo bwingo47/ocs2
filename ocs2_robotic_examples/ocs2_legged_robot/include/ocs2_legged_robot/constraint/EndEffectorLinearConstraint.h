@@ -68,10 +68,18 @@ class EndEffectorLinearConstraint final : public StateInputConstraint {
   ~EndEffectorLinearConstraint() override = default;
   EndEffectorLinearConstraint* clone() const override { return new EndEffectorLinearConstraint(*this); }
 
-  /** Sets a new constraint coefficients. */
+  /** Sets a new constraint coefficients.
+   *  rvalue reference of Config struct facilitates std::move()
+   *  instead of copying for assigning member variable config_ */
   void configure(Config&& config);
   /** Sets a new constraint coefficients. */
-  void configure(const Config& config) { this->configure(Config(config)); }
+  void configure(const Config& config)
+  {
+    // copy constructor Config(const Config& ) takes the lvalue reference
+    // config and creates a temporary Config obj that gets passed as a rvalue to the
+    // rvalue version of the configure() function.
+    this->configure(Config(config));
+  }
 
   /** Gets the underlying end-effector kinematics interface. */
   EndEffectorKinematics<scalar_t>& getEndEffectorKinematics() { return *endEffectorKinematicsPtr_; }
