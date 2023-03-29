@@ -42,7 +42,10 @@ namespace legged_robot {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-SwingTrajectoryPlanner::SwingTrajectoryPlanner(Config config, size_t numFeet) : config_(std::move(config)), numFeet_(numFeet) {}
+SwingTrajectoryPlanner::SwingTrajectoryPlanner(Config config, size_t numFeet)
+    : config_(std::move(config)),
+      numFeet_(numFeet)
+{}
 
 /******************************************************************************************************/
 /******************************************************************************************************/
@@ -88,9 +91,12 @@ void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule, const feet
     std::tie(startTimesIndices[leg], finalTimesIndices[leg]) = updateFootSchedule(eesContactFlagStocks[leg]);
   }
 
+  // j feet index
   for (size_t j = 0; j < numFeet_; j++) {
     feetHeightTrajectories_[j].clear();
     feetHeightTrajectories_[j].reserve(modeSequence.size());
+
+    // p modeSequence/contactFlag index
     for (int p = 0; p < modeSequence.size(); ++p) {
       if (!eesContactFlagStocks[j][p]) {  // for a swing leg
         const int swingStartIndex = startTimesIndices[j][p];
@@ -127,7 +133,9 @@ std::pair<std::vector<int>, std::vector<int>> SwingTrajectoryPlanner::updateFoot
   std::vector<int> finalTimeIndexStock(numPhases, 0);
 
   // find the startTime and finalTime indices for swing feet
+  // only update swing start and final time indicies when in swing phase
   for (size_t i = 0; i < numPhases; i++) {
+    // when not in contact, i.e. during swing
     if (!contactFlagStock[i]) {
       std::tie(startTimeIndexStock[i], finalTimeIndexStock[i]) = findIndex(i, contactFlagStock);
     }

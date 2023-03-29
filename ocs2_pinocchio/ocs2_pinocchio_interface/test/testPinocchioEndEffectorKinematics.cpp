@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ocs2_robotic_tools/common/AngularVelocityMapping.h>
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 
+#include <ocs2_core/automatic_differentiation/Types.h>
+
 #include <gtest/gtest.h>
 
 #include "ManipulatorArmUrdf.h"
@@ -154,7 +156,11 @@ TEST_F(TestEndEffectorKinematics, testPosition) {
 
   const auto eePos = eeKinematicsPtr->getPosition(x)[0];
   const auto eePosAd = eeKinematicsCppAdPtr->getPosition(x)[0];
+  ocs2::ad_vector_t eePosAdExternal = eeKinematicsCppAdPtr->getPositionCppAdExternal(x.template cast<ocs2::ad_scalar_t>())[0];
+//  ocs2::vector_t eePosAdExternalDouble;
+//  std::cout << "eePosAdExternal value: " << eePosAdExternal.value() << std::endl;
   EXPECT_TRUE(eePos.isApprox(eePosAd));
+//  EXPECT_TRUE(eePos.isApprox(eePosAdExternalDouble));
 }
 
 TEST_F(TestEndEffectorKinematics, testPositionApproximation) {

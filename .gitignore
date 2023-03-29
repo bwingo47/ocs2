@@ -31,3 +31,5 @@ ocs2_robotic_examples/ocs2_legged_robot_ros/cmake-build-*/
 .vscode/
 .DS_Store
 */.DS_Store
+*/cmake-build-*
+*/*/cmake-build-*

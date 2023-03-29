@@ -85,6 +85,8 @@ TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTar
 
   // desired state trajectory
   vector_array_t stateTrajectory(2, vector_t::Zero(observation.state.size()));
+  // first 6 elements of each vector_t is the generalized momentum terms
+  // next 6 are base position and orientation
   stateTrajectory[0] << vector_t::Zero(6), currentPose, defaultJointState;
   stateTrajectory[1] << vector_t::Zero(6), targetPose, defaultJointState;
 

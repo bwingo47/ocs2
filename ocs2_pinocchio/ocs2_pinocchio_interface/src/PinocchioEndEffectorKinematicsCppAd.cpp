@@ -76,14 +76,14 @@ PinocchioEndEffectorKinematicsCppAd::PinocchioEndEffectorKinematicsCppAd(
   mappingPtr->setPinocchioInterface(pinocchioInterfaceCppAd);
 
   // position function
-  auto positionFunc = [&, this](const ad_vector_t& x, ad_vector_t& y) {
+  positionFunc = [&, this](const ad_vector_t& x, ad_vector_t& y) {
     updateCallback(x, pinocchioInterfaceCppAd);
     y = getPositionCppAd(pinocchioInterfaceCppAd, *mappingPtr, x);
   };
   positionCppAdInterfacePtr_.reset(new CppAdInterface(positionFunc, stateDim, modelName + "_position", modelFolder));
 
   // velocity function
-  auto velocityFunc = [&, this](const ad_vector_t& x, ad_vector_t& y) {
+  velocityFunc = [&, this](const ad_vector_t& x, ad_vector_t& y) {
     const ad_vector_t state = x.head(stateDim);
     const ad_vector_t input = x.tail(inputDim);
     updateCallback(state, pinocchioInterfaceCppAd);
@@ -156,6 +156,22 @@ ad_vector_t PinocchioEndEffectorKinematicsCppAd::getPositionCppAd(PinocchioInter
   return positions;
 }
 
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+std::vector<ad_vector_t> PinocchioEndEffectorKinematicsCppAd::getPositionCppAdExternal(const ad_vector_t& state)
+{
+  ad_vector_t  positionValues;
+  positionFunc(state, positionValues);
+
+  std::vector<ad_vector_t> positions;
+  for (int i = 0; i < endEffectorIds_.size(); i++) {
+    positions.emplace_back(positionValues.segment<3>(3 * i));
+  }
+  return positions;
+}
+
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
@@ -212,7 +228,26 @@ ad_vector_t PinocchioEndEffectorKinematicsCppAd::getVelocityCppAd(PinocchioInter
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-auto PinocchioEndEffectorKinematicsCppAd::getVelocity(const vector_t& state, const vector_t& input) const -> std::vector<vector3_t> {
+std::vector<ad_vector_t> PinocchioEndEffectorKinematicsCppAd::getVelocityCppAdExternal(const ad_vector_t &state,
+                                                                                       const ad_vector_t &input)
+{
+  ad_vector_t stateInput(state.rows() + input.rows());
+  stateInput << state, input;
+  ad_vector_t velocityValues;
+  velocityFunc(stateInput, velocityValues);
+
+  std::vector<ad_vector_t> velocities;
+  for (int i = 0; i < endEffectorIds_.size(); i++) {
+    velocities.emplace_back(velocityValues.segment<3>(3 * i));
+  }
+  return velocities;
+}
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+auto PinocchioEndEffectorKinematicsCppAd::getVelocity(const vector_t& state, const vector_t& input) const -> std::vector<vector3_t>
+{
   vector_t stateInput(state.rows() + input.rows());
   stateInput << state, input;
   const vector_t velocityValues = velocityCppAdInterfacePtr_->getFunctionValue(stateInput);

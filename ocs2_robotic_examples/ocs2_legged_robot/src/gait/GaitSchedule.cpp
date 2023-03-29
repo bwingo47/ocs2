@@ -43,12 +43,14 @@ GaitSchedule::GaitSchedule(ModeSchedule initModeSchedule, ModeSequenceTemplate i
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void GaitSchedule::insertModeSequenceTemplate(const ModeSequenceTemplate& modeSequenceTemplate, scalar_t startTime, scalar_t finalTime) {
+void GaitSchedule::insertModeSequenceTemplate(const ModeSequenceTemplate& modeSequenceTemplate,
+                                              scalar_t startTime, scalar_t finalTime) {
   modeSequenceTemplate_ = modeSequenceTemplate;
   auto& eventTimes = modeSchedule_.eventTimes;
   auto& modeSequence = modeSchedule_.modeSequence;
 
   // find the index on which the new gait should be added
+  // lower_bound returns an iterator pointing to the first element in the range [first,last) which has a value not less than ‘val’
   const size_t index = std::lower_bound(eventTimes.begin(), eventTimes.end(), startTime) - eventTimes.begin();
 
   // delete the old logic from the index
@@ -78,10 +80,15 @@ void GaitSchedule::insertModeSequenceTemplate(const ModeSequenceTemplate& modeSe
 ModeSchedule GaitSchedule::getModeSchedule(scalar_t lowerBoundTime, scalar_t upperBoundTime) {
   auto& eventTimes = modeSchedule_.eventTimes;
   auto& modeSequence = modeSchedule_.modeSequence;
+  // https://stackoverflow.com/questions/41958581/difference-between-upper-bound-and-lower-bound-in-stl#:~:text=on%20this%20post.-,lower_bound%20%3A,which%20compares%20greater%20than%20val
+  // lower_bound returns an iterator pointing to the first element in the range [first,last) which has a value not less than ‘val’
+  // upper_bound returns an iterator pointing to the first element in the range [first,last) which has a value greater than ‘val’
   const size_t index = std::lower_bound(eventTimes.begin(), eventTimes.end(), lowerBoundTime) - eventTimes.begin();
 
   if (index > 0) {
     // delete the old logic from index and set the default start phase to stance
+    // Removes the elements in the range [first, last),
+    // if first == last, i.e. erasing empty range, then it's a no-op, no elements get erased
     eventTimes.erase(eventTimes.begin(), eventTimes.begin() + index - 1);  // keep the one before the last to make it stance
     modeSequence.erase(modeSequence.begin(), modeSequence.begin() + index - 1);
 

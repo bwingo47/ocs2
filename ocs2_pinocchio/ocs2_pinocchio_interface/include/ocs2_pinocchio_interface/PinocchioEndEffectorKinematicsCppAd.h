@@ -103,6 +103,9 @@ class PinocchioEndEffectorKinematicsCppAd final : public EndEffectorKinematics<s
   std::vector<vector3_t> getVelocity(const vector_t& state, const vector_t& input) const override;
   std::vector<vector3_t> getOrientationError(const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const override;
 
+  std::vector<ad_vector_t> getPositionCppAdExternal(const ad_vector_t& state);
+  std::vector<ad_vector_t> getVelocityCppAdExternal(const ad_vector_t& state, const ad_vector_t& input);
+
   std::vector<VectorFunctionLinearApproximation> getPositionLinearApproximation(const vector_t& state) const override;
   std::vector<VectorFunctionLinearApproximation> getVelocityLinearApproximation(const vector_t& state,
                                                                                 const vector_t& input) const override;
@@ -123,6 +126,9 @@ class PinocchioEndEffectorKinematicsCppAd final : public EndEffectorKinematics<s
   std::unique_ptr<CppAdInterface> positionCppAdInterfacePtr_;
   std::unique_ptr<CppAdInterface> velocityCppAdInterfacePtr_;
   std::unique_ptr<CppAdInterface> orientationErrorCppAdInterfacePtr_;
+
+  std::function<void(const ad_vector_t&, ad_vector_t&)> positionFunc;
+  std::function<void(const ad_vector_t&, ad_vector_t&)> velocityFunc;
 
   const std::vector<std::string> endEffectorIds_;
   std::vector<size_t> endEffectorFrameIds_;

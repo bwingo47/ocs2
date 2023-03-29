@@ -66,6 +66,8 @@ PinocchioInterface createPinocchioInterface(const std::string& urdfFilePath, con
   // remove extraneous joints from urdf
   ::urdf::ModelInterfaceSharedPtr newModel = std::make_shared<::urdf::ModelInterface>(*urdfTree);
   for (joint_pair_t& jointPair : newModel->joints_) {
+    // the conditional of the if() is true when jointPair.first, i.e. jointPair's name, is
+    // not in jointNames vector
     if (std::find(jointNames.begin(), jointNames.end(), jointPair.first) == jointNames.end()) {
       jointPair.second->type = urdf::Joint::FIXED;
     }
@@ -95,18 +97,22 @@ CentroidalModelInfo createCentroidalModelInfo(const PinocchioInterface& interfac
 
   CentroidalModelInfoTpl<scalar_t> info;
   info.centroidalModelType = type;
-  info.numThreeDofContacts = threeDofContactNames.size();
-  info.numSixDofContacts = sixDofContactNames.size();
+  info.numThreeDofContacts = threeDofContactNames.size();  // "0" for Digit
+  info.numSixDofContacts = sixDofContactNames.size();  // "2" for Digit
   info.generalizedCoordinatesNum = model.nq;
-  info.actuatedDofNum = info.generalizedCoordinatesNum - 6;
-  info.stateDim = info.generalizedCoordinatesNum + 6;
+  info.actuatedDofNum = info.generalizedCoordinatesNum - 6; // "-6" to remove floating base DoFs from "nq"
+  info.stateDim = info.generalizedCoordinatesNum + 6; // "+6" to add centroidal momentum to "nq"
   info.inputDim = info.actuatedDofNum + 3 * info.numThreeDofContacts + 6 * info.numSixDofContacts;
   info.robotMass = pinocchio::computeTotalMass(model);
 
+  // first push 3-DoF contact frames to endEffectorFrameIndices
+  // for the case of Digit, no 3-DoF contacts
   for (const auto& name : threeDofContactNames) {
     info.endEffectorFrameIndices.push_back(model.getBodyId(name));
   }
 
+  // then push 6-DoF contact frames to endEffectorFrameIndices
+  // for the case of Digit, two 6-DoF contacts
   for (const auto& name : sixDofContactNames) {
     info.endEffectorFrameIndices.push_back(model.getBodyId(name));
   }
@@ -117,6 +123,7 @@ CentroidalModelInfo createCentroidalModelInfo(const PinocchioInterface& interfac
   info.centroidalInertiaNominal.setZero();
   info.comToBasePositionNominal.setZero();
   if (info.centroidalModelType == CentroidalModelType::SingleRigidBodyDynamics) {
+    // this is a zero velocity vector for calling ccrba()
     const vector_t vPinocchioNominal = vector_t::Zero(info.generalizedCoordinatesNum);
     pinocchio::ccrba(model, data, info.qPinocchioNominal, vPinocchioNominal);
     info.centroidalInertiaNominal = data.Ig.inertia().matrix();

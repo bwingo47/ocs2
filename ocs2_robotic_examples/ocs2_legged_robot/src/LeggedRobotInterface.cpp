@@ -88,6 +88,7 @@ LeggedRobotInterface::LeggedRobotInterface(const std::string& taskFile, const st
   }
 
   bool verbose;
+  // load value for CppAD verbose from taskfile
   loadData::loadCppDataType(taskFile, "legged_robot_interface.verbose", verbose);
 
   // load setting from loading file

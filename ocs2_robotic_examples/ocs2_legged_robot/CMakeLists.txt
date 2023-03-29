@@ -83,6 +83,7 @@ add_library(${PROJECT_NAME}
   src/common/ModelSettings.cpp
   src/dynamics/LeggedRobotDynamicsAD.cpp
   src/constraint/EndEffectorLinearConstraint.cpp
+  src/constraint/EndEffectorLinearConstraintCppAd.cpp
   src/constraint/FrictionConeConstraint.cpp
   src/constraint/ZeroForceConstraint.cpp
   src/constraint/NormalVelocityConstraintCppAd.cpp

@@ -74,7 +74,8 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
    * @param [in] pinocchioInterface: pinocchio interface on which computations are expected. It will keep a pointer for the getters.
    */
   void setPinocchioInterface(const PinocchioInterface& pinocchioInterface) {
-    // de-reference the pinocchioInterface lvalue reference
+    // &pinocchioInterface gets its address in memory
+    // and give this address to be hold by pointer pinocchioInterfacePtr_
     pinocchioInterfacePtr_ = &pinocchioInterface;
     mappingPtr_->setPinocchioInterface(pinocchioInterface);
   }
@@ -129,6 +130,8 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
  private:
   PinocchioEndEffectorKinematics(const PinocchioEndEffectorKinematics& rhs);
 
+  // pointer to a const PinocchioInterface object
+  // this is not a const pointer, it can be assigned to point to different PinocchioInterface objects
   const PinocchioInterface* pinocchioInterfacePtr_;
   std::unique_ptr<PinocchioStateInputMapping<scalar_t>> mappingPtr_;
   const std::vector<std::string> endEffectorIds_;

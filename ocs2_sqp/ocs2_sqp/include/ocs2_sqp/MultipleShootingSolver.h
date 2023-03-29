@@ -141,6 +141,13 @@ class MultipleShootingSolver : public SolverBase {
 
   // Problem definition
   Settings settings_;
+  // A function handle to compute the discrete approximation of the system's flowmap.
+  // @param system : system to be discretized
+  // @param t : starting time of the discretization interval
+  // @param x : starting state x_{k}
+  // @param u : input u_{k}, assumed constant over the entire interval
+  // @param dt : interval duration
+  // Returns x_{k+1}
   DynamicsDiscretizer discretizer_;
   DynamicsSensitivityDiscretizer sensitivityDiscretizer_;
   std::vector<OptimalControlProblem> ocpDefinitions_;

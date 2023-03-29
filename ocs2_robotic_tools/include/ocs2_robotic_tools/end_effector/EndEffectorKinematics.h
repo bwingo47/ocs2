@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <utility>
 
 #include <ocs2_core/Types.h>
+#include <ocs2_core/automatic_differentiation/Types.h>
 
 namespace ocs2 {
 
@@ -54,7 +55,7 @@ class EndEffectorKinematics {
   virtual const std::vector<std::string>& getIds() const = 0;
 
   /**
-   * Get end-effector position vectors in world frame
+   * exposed CppAD funciton to get end-effector position vectors in world frame
    *
    * @param [in] state vector
    * @return array of position vectors

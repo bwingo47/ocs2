@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pinocchio/algorithm/kinematics.hpp>
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 #include <ocs2_centroidal_model/CentroidalModelPinocchioMapping.h>
 #include <ocs2_centroidal_model/ModelHelperFunctions.h>
@@ -43,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ocs2_legged_robot/common/ModelSettings.h"
 #include "ocs2_legged_robot/constraint/EndEffectorLinearConstraint.h"
+#include "ocs2_legged_robot/constraint/EndEffectorLinearConstraintCppAd.h"
 #include "ocs2_legged_robot/test/AnymalFactoryFunctions.h"
 
 using namespace ocs2;
@@ -100,11 +102,14 @@ class testEndEffectorLinearConstraint : public ::testing::Test {
     config.b = vector_t::Random(3);
     config.Ax = matrix_t::Random(3, 3);
     config.Av = matrix_t::Random(3, 3);
+
+    configCppAd.fromStandardConfig(config);
   }
 
   const CentroidalModelType centroidalModelType = CentroidalModelType::SingleRigidBodyDynamics;
   std::unique_ptr<PinocchioInterface> pinocchioInterfacePtr = createAnymalPinocchioInterface();
-  const CentroidalModelInfo centroidalModelInfo = createAnymalCentroidalModelInfo(*pinocchioInterfacePtr, centroidalModelType);
+  const CentroidalModelInfo centroidalModelInfo = createAnymalCentroidalModelInfo(*pinocchioInterfacePtr,
+                                                                                  centroidalModelType);
   PreComputation preComputation;
 
   std::unique_ptr<CentroidalModelPinocchioMapping> pinocchioMappingPtr;
@@ -112,6 +117,7 @@ class testEndEffectorLinearConstraint : public ::testing::Test {
   std::unique_ptr<PinocchioEndEffectorKinematics> eeKinematicsPtr;
   std::unique_ptr<PinocchioEndEffectorKinematicsCppAd> eeKinematicsAdPtr;
   EndEffectorLinearConstraint::Config config;
+  EndEffectorLinearConstraintCppAd::ConfigCppAd configCppAd;
   vector_t x, u;
 };
 
@@ -120,6 +126,21 @@ TEST_F(testEndEffectorLinearConstraint, testValue) {
   eeVelConstraintPtr->configure(config);
   auto eeVelConstraintAdPtr = std::unique_ptr<EndEffectorLinearConstraint>(new EndEffectorLinearConstraint(*eeKinematicsAdPtr, 3));
   eeVelConstraintAdPtr->configure(config);
+  auto eeVelConstraintFullAdPtr = std::unique_ptr<EndEffectorLinearConstraintCppAd>(new EndEffectorLinearConstraintCppAd(*eeKinematicsAdPtr,
+                                                                                                                         3,
+                                                                                                                         centroidalModelInfo.stateDim,
+                                                                                                                         centroidalModelInfo.inputDim,
+                                                                                                                         "EEVelConstraint",
+                                                                                                                         "/tmp/ocs2",
+                                                                                                                         true,
+                                                                                                                         true,
+                                                                                                                         configCppAd));
+
+  std::cout << "++++++++++++++++++Unit Test++++++++++++++++++++++" << std::endl;
+  std::cout << "configCppAd.b size: " << configCppAd.b.size() << std::endl;
+  std::cout << "configCppAd.Ax size: " << configCppAd.Ax.size() << std::endl;
+  std::cout << "configCppAd.Av size: " << configCppAd.Av.size() << std::endl;
+  std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
   dynamic_cast<PinocchioEndEffectorKinematics&>(eeVelConstraintPtr->getEndEffectorKinematics())
       .setPinocchioInterface(*pinocchioInterfacePtr);
@@ -138,8 +159,10 @@ TEST_F(testEndEffectorLinearConstraint, testValue) {
 
   const auto value = eeVelConstraintPtr->getValue(0.0, x, u, preComputation);
   const auto valueAd = eeVelConstraintAdPtr->getValue(0.0, x, u, preComputation);
+  const auto valueFullAd = eeVelConstraintFullAdPtr->getValue(0.0, x, u, preComputation);
 
   EXPECT_TRUE(value.isApprox(valueAd));
+  EXPECT_TRUE(value.isApprox(valueFullAd));
 }
 
 TEST_F(testEndEffectorLinearConstraint, testLinearApproximation) {
@@ -147,6 +170,16 @@ TEST_F(testEndEffectorLinearConstraint, testLinearApproximation) {
   eeVelConstraintPtr->configure(config);
   auto eeVelConstraintAdPtr = std::unique_ptr<EndEffectorLinearConstraint>(new EndEffectorLinearConstraint(*eeKinematicsAdPtr, 3));
   eeVelConstraintAdPtr->configure(config);
+//  auto eeVelConstraintFullAdPtr = std::unique_ptr<EndEffectorLinearConstraintCppAd>(new EndEffectorLinearConstraintCppAd(*eeKinematicsAdPtr,
+//                                                                                                                         3,
+//                                                                                                                         centroidalModelInfo.stateDim,
+//                                                                                                                         centroidalModelInfo.inputDim,
+//                                                                                                                         "EEVelConstraint",
+//                                                                                                                         "/tmp/ocs2",
+//                                                                                                                         true,
+//                                                                                                                         true,
+//                                                                                                                         configCppAd));
+//  eeVelConstraintFullAdPtr->configure(configCppAd);
 
   dynamic_cast<PinocchioEndEffectorKinematics&>(eeVelConstraintPtr->getEndEffectorKinematics())
       .setPinocchioInterface(*pinocchioInterfacePtr);
@@ -172,8 +205,13 @@ TEST_F(testEndEffectorLinearConstraint, testLinearApproximation) {
 
   const auto linApprox = eeVelConstraintPtr->getLinearApproximation(0.0, x, u, preComputation);
   const auto linApproxAd = eeVelConstraintAdPtr->getLinearApproximation(0.0, x, u, preComputation);
+//  const auto linApproxFullAd = eeVelConstraintFullAdPtr->getLinearApproximation(0.0, x, u, preComputation);
 
   EXPECT_TRUE(linApprox.f.isApprox(linApproxAd.f));
   EXPECT_TRUE(linApprox.dfdx.isApprox(linApproxAd.dfdx, 1e-14));
   EXPECT_TRUE(linApprox.dfdu.isApprox(linApproxAd.dfdu));
+
+//  EXPECT_TRUE(linApprox.f.isApprox(linApproxFullAd.f));
+//  EXPECT_TRUE(linApprox.dfdx.isApprox(linApproxFullAd.dfdx, 1e-14));
+//  EXPECT_TRUE(linApprox.dfdu.isApprox(linApproxFullAd.dfdu));
 }
